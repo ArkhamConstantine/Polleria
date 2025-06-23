@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<title>Pollería Digital</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root {
+  --light1:#ffb07c;--light2:#fff5a5;--light3:#b8f2c9;
+  --darkf:#000;--dark1:#111;--txt-dark:#000000;
+}
+body {
+  font-family:'Segoe UI',sans-serif;
+  background:linear-gradient(-45deg,var(--light1),var(--light2),var(--light3),var(--light1));
+  background-size:400% 400%;
+  animation:bgAnim 15s ease infinite;
+  color:#333;overflow-x:hidden;transition:0.5s;
+}
+@keyframes bgAnim{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+body.dark-mode {
+  background:var(--darkf);
+  color:var(--txt-dark);
+}
+body.dark-mode .tab-button,
+body.dark-mode h2{color:var(--txt-dark)}
+
+#loginScreen{position:fixed;top:0;left:0;width:100vw;height:100vh;background:black;display:flex;align-items:center;justify-content:center;z-index:9999}
+#loginBox{text-align:center;color:white}
+#loginBox input{margin:8px 0;padding:8px;width:200px;border:none;border-radius:6px}
+#loginBox button{background:purple;color:white;padding:10px 30px;border:none;border-radius:6px;font-size:16px;cursor:pointer;transition:0.3s}
+#loginBox button:hover{box-shadow:0 0 15px purple}
+
+.redes{position:fixed;left:10px;top:40%;display:flex;flex-direction:column;gap:10px;z-index:1000}
+.redes img{width:40px;height:40px;border-radius:50%;cursor:pointer;transition:transform .2s}
+.redes img:hover{transform:scale(1.1)}
+
+#config{position:fixed;left:10px;top:10px;background:rgba(255,255,255,0.9);padding:10px;border-radius:8px;z-index:1000;transition:0.5s}
+body.dark-mode #config{background:rgba(0,0,0,0.5)}
+#config img{width:30px;height:30px}
+#config label,select{display:block;font-size:14px;margin-top:8px}
+
+.container{max-width:1200px;margin:80px auto 20px;padding:20px}
+h1,h2,h3{text-align:center;margin:15px 0}
+.tabs{text-align:center;margin:20px 0}
+.tab-button{padding:8px 20px;margin:0 5px;border:none;border-radius:6px;background:#f5f5f5;cursor:pointer;transition:0.3s}
+.tab-button.active{background:#a9866f;color:white}
+
+.section{display:none;animation:fadeScale .4s ease;padding-bottom:20px}
+.section.active{display:block}
+@keyframes fadeScale{0%{opacity:0;transform:scale(0.95)}100%{opacity:1;transform:scale(1)}}
+
+.container img[alt="Logo Pollería"]{width:200px;margin:0 auto 10px;display:block}
+.section img{display:block;margin:10px auto 20px;max-width:80%;height:auto}
+.section h2{font-size:1.8em;margin-top:15px;color:inherit}
+
+.productos {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  grid-auto-rows:minmax(0,1fr);
+  gap:15px;
+}
+.producto {
+  width:100%;background:white;padding:10px;border-radius:8px;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,0.15);transition:0.5s;
+}
+body.dark-mode .producto{background:#222}
+.producto img{width:100%;height:auto;transition:transform .3s}
+.producto img:hover{transform:scale(1.03)}
+.precio {
+  display:inline-block;
+  padding:4px 8px;
+  background:rgba(255,255,255,0.7);
+  border-radius:4px;
+  color:#000;
+  font-weight:bold;
+  margin:5px 0;
+  transition:0.5s;
+}
+body.dark-mode .precio { color:#fff; background:rgba(255,255,255,0.1) }
+
+.carrusel{position:relative;max-width:400px;height:200px;margin:20px auto;overflow:hidden;border-radius:8px}
+.slides{display:flex;height:100%;transition:transform .5s ease}
+.slide{min-width:100%;padding:10px;text-align:center;background:white}
+body.dark-mode .slide{background:#222}
+.slide img{max-width:100%;max-height:120px}
+.nav-arrow{position:absolute;top:50%;transform:translateY(-50%);font-size:36px;color:#ffa500;cursor:pointer;user-select:none;z-index:10}
+.prev{left:5px}.next{right:5px}
+
+.carrito{position:fixed;top:20px;right:20px;cursor:pointer;z-index:1000}
+.carrito img{width:40px;height:40px}
+.counter{position:absolute;top:-8px;right:-8px;background:red;color:white;border-radius:50%;padding:2px 6px;font-size:12px}
+
+.modal{position:fixed;top:0;left:0;width:100%;height:100%;display:none;align-items:center;justify-content:center;backdrop-filter:blur(5px);background:rgba(0,0,0,0.2);z-index:2000}
+.modal.active{display:flex}
+.modal-content{background:white;padding:20px;border-radius:8px;max-width:90%;max-height:90%;overflow:auto;position:relative}
+body.dark-mode .modal-content{background:#333}
+.close-btn{position:absolute;top:10px;right:10px;font-size:20px;border:none;background:none;cursor:pointer}
+
+.toast{position:fixed;bottom:20px;right:20px;background:#333;color:white;padding:10px 16px;border-radius:6px;opacity:0;transition:opacity .3s;z-index:3000}
+.toast.show{opacity:1}
+
+#confeti{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:3000}
+#finBtn{display:block;margin:30px auto;padding:10px 20px;background:#333;color:white;border:none;border-radius:6px;cursor:pointer}
+
+@media(max-width:768px){.productos{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div id="loginScreen"><div id="loginBox">
+  <h2>Bienvenido a Pollería</h2>
+  <input id="txtName" type="text" placeholder="Nombre"><br>
+  <input id="txtAge" type="number" placeholder="Edad"><br>
+  <button id="btnLogin">INGRESAR</button>
+</div></div>
+
+<div class="redes">
+  <img src="img/Ins.webp" alt="Instagram" onclick="window.open('https://www.instagram.com/steve.ac_/','_blank')" />
+  <img src="img/Tk.webp" alt="TikTok" onclick="window.open('https://www.tiktok.com/@artemis_woman','_blank')" />
+  <img src="img/What.webp" alt="WhatsApp" onclick="window.open('https://wa.me/qr/NS6RQGWMGHSEM1','_blank')" />
+</div>
+
+<div id="config">
+  <img src="img/Ajuste.webp" alt="Ajustes" />
+  <label><input type="checkbox" id="chkDark"> Modo oscuro</label>
+  <label>Duración confeti: <select id="selConfeti"><option value="3000" selected>3s</option></select></label>
+</div>
+
+<div id="mainContent" style="display:none;">
+  <div class="container">
+    <img src="img/Rosca.webp" alt="Logo Pollería" />
+    <h1>Hola, <span id="spanUser"></span></h1>
+    <div class="tabs">
+      <button class="tab-button active" data-sec="inicio">Inicio</button>
+      <button class="tab-button" data-sec="parrillas">Parrillas</button>
+      <button class="tab-button" data-sec="platillos">Platillos</button>
+      <button class="tab-button" data-sec="snacks">Snacks</button>
+      <button class="tab-button" data-sec="bebidas">Bebidas</button>
+    </div>
+
+    <div id="inicio" class="section active">
+      <h2>Inicio</h2>
+      <div class="carrusel">
+        <div class="slides" id="slides"></div>
+        <div class="nav-arrow prev">&#10094;</div>
+        <div class="nav-arrow next">&#10095;</div>
+      </div>
+      <div class="productos" id="prodInicio"></div>
+    </div>
+
+    <div id="parrillas" class="section">
+      <h2>Parrillas</h2>
+      <img src="img/ParrillaN.webp" alt="Parrilla" />
+      <div class="productos" id="prodParrillas"></div>
+    </div>
+
+    <div id="platillos" class="section">
+      <h2>Platillos</h2>
+      <div class="productos" id="prodPlatillos"></div>
+    </div>
+
+    <div id="snacks" class="section">
+      <h2>Snacks</h2>
+      <img src="img/Snacks.webp" alt="Snacks" />
+      <div class="productos" id="prodSnacks"></div>
+    </div>
+
+    <div id="bebidas" class="section">
+      <h2>Bebidas Nuevas</h2>
+      <img src="img/BebidasN.webp" alt="Bebidas Nuevas" />
+      <div class="productos" id="prodBebidas"></div>
+    </div>
+
+    <h3>¿Tienes una sugerencia o reclamo?</h3>
+    <textarea id="txtSug" rows="3" style="width:100%;border-radius:6px;"></textarea><br><br>
+    <button onclick="showToast('¡Gracias por tu comentario!')">Enviar comentario</button>
+    <button id="finBtn" onclick="window.open('img/Goku.webp','_blank')">Fin del proyecto</button>
+  </div>
+
+  <div class="carrito" onclick="openCart()">
+    <img src="img/carrito.webp" alt="Carrito" /><div class="counter" id="counter">0</div>
+  </div>
+
+  <div id="modal" class="modal"><div class="modal-content">
+    <button class="close-btn" onclick="closeCart()">✖</button>
+    <h2>Carrito</h2><div id="detalle"></div><h3>Total:</h3><div id="total"></div>
+    <button onclick="confirmar()">Confirmar compra</button>
+  </div></div>
+
+  <div id="toast" class="toast"></div>
+  <canvas id="confeti"></canvas>
+</div>
+
+<script>
+let carrito=[], user;
+const selConf = document.getElementById('selConfeti');
+
+document.getElementById('btnLogin').onclick = () => {
+  const nm = document.getElementById('txtName').value.trim();
+  if (!nm) return alert('Ingresa tu nombre');
+  user = nm;
+  document.getElementById('spanUser').innerText = nm;
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('mainContent').style.display = 'block';
+  initApp();
+};
+
+function initApp(){
+  document.getElementById('chkDark').onchange = e => document.body.classList.toggle('dark-mode', e.target.checked);
+  document.querySelectorAll('.tabs .tab-button').forEach(btn => {
+    btn.onclick = () => {
+      document.querySelectorAll('.tabs .tab-button').forEach(b=>b.classList.remove('active'));
+      document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.sec).classList.add('active');
+    };
+  });
+  setupContent();
+}
+
+function setupContent(){
+  const pollos = [
+    {n:"1/8 de pollo",p:8,img:"img/Octavopollo.webp"},
+    {n:"1/4 de pollo",p:15,img:"img/Cuartopollo.webp"},
+    {n:"1/2 de pollo",p:28.5,img:"img/Mediopollo.webp"},
+    {n:"1 pollo",p:55,img:"img/Unpollo.webp"}
+  ];
+  const bebidasInit = [
+    {n:"Coca‑Cola 3L",p:10.5,img:"img/coca_cola.webp"},
+    {n:"Inka Kola 3L",p:10.5,img:"img/inka_kola.webp"},
+    {n:"Chicha Morada 1L",p:8,img:"img/chicha_morada.webp"},
+    {n:"Agua Saratoga 500 ml",p:2,img:"img/agua.webp"}
+  ];
+  const parrillas = [
+    {n:"",p:15,img:"img/P1.webp"}, {n:"",p:15.5,img:"img/P2.webp"},
+    {n:"",p:16,img:"img/P3.webp"}, {n:"",p:16.5,img:"img/P4.webp"},
+    {n:"",p:17,img:"img/P5.webp"}, {n:"",p:17.5,img:"img/P6.webp"},
+    {n:"",p:18,img:"img/P7.webp"}, {n:"",p:18.5,img:"img/P8.webp"},
+  ];
+  const platillos = [
+    {n:"",p:22.7,img:"img/Pl1.webp"}, {n:"",p:3.5,img:"img/Pl2.webp"},
+    {n:"",p:4,img:"img/Pl3.webp"}, {n:"",p:18,img:"img/Pl4.webp"},
+    {n:"",p:6,img:"img/Pl5.webp"}
+  ];
+  const snacks = [
+    {n:"",p:45,img:"img/S1.webp"}, {n:"",p:7,img:"img/S2.webp"},
+    {n:"",p:11.5,img:"img/S3.webp"}, {n:"",p:2,img:"img/S4.webp"},
+    {n:"",p:42,img:"img/S5.webp"}, {n:"",p:2.2,img:"img/S6.webp"},
+    {n:"",p:1.8,img:"img/S7.webp"}, {n:"",p:12,img:"img/S8.webp"},
+    {n:"",p:3.4,img:"img/S9.webp"}, {n:"",p:2.3,img:"img/S10.webp"},
+    {n:"",p:9,img:"img/S11.webp"}
+  ];
+  const newB = [
+    {n:"",p:3.5,img:"img/B1.webp"},{n:"",p:7,img:"img/B2.webp"},
+    {n:"",p:1.2,img:"img/B3.webp"},{n:"",p:24.8,img:"img/B4.webp"},
+    {n:"",p:6,img:"img/B5.webp"},{n:"",p:3.7,img:"img/B6.webp"},
+    {n:"",p:5.4,img:"img/B7.webp"},{n:"",p:15,img:"img/B8.webp"},
+    {n:"",p:12,img:"img/B9.webp"},{n:"",p:15,img:"img/B10.webp"},
+    {n:"",p:85,img:"img/B11.webp"},{n:"",p:7,img:"img/B12.webp"},
+    {n:"",p:3.8,img:"img/B13.webp"},{n:"",p:5.9,img:"img/B14.webp"},
+    {n:"",p:11.2,img:"img/B15.webp"}
+  ];
+
+  [...pollos, ...bebidasInit].forEach(i=>createCard(i,'prodInicio'));
+  parrillas.forEach(i=>createCard(i,'prodParrillas'));
+  platillos.forEach(i=>createCard(i,'prodPlatillos'));
+  snacks.forEach(i=>createCard(i,'prodSnacks'));
+  newB.forEach(i=>createCard(i,'prodBebidas'));
+
+  const slides = document.getElementById('slides');
+  slides.innerHTML = '';
+  pollos.forEach(i => {
+    let d = document.createElement('div');
+    d.className='slide';
+    d.innerHTML = `<img src="${i.img}" alt="${i.n}"><p class="precio">S/ ${i.p.toFixed(2)}</p><button onclick="addCart('${i.n}',${i.p})">Agregar</button>`;
+    slides.appendChild(d);
+  });
+  let idx = 0;
+  document.querySelector('.prev').onclick = () => {
+    idx = (idx - 1 + pollos.length) % pollos.length;
+    slides.style.transform = `translateX(-${idx * 100}%)`;
+  };
+  document.querySelector('.next').onclick = () => {
+    idx = (idx + 1) % pollos.length;
+    slides.style.transform = `translateX(-${idx * 100}%)`;
+  };
+}
+
+function createCard(i, container) {
+  const c = document.getElementById(container);
+  const d = document.createElement('div');
+  d.className = 'producto';
+  d.innerHTML = `
+    <img src="${i.img}" alt="${i.n}">
+    <h3>${i.n}</h3>
+    <p class="precio">S/ ${i.p.toFixed(2)}</p>
+    <button onclick="addCart('${i.n}', ${i.p})">Agregar</button>
+  `;
+  c.appendChild(d);
+}
+
+
+function addCart(n,p){
+  const it=carrito.find(x=>x.n===n);
+  if(it){it.q++;it.sub=it.q*p;} else carrito.push({n,p,q:1,sub:p});
+  document.getElementById('counter').innerText=carrito.reduce((a,i)=>a+i.q,0);
+  showToast(`✅ ${n} agregado`);
+}
+
+function openCart(){document.getElementById('modal').classList.add('active');showDetails();}
+function closeCart(){document.getElementById('modal').classList.remove('active');}
+function showDetails(){
+  const div=document.getElementById('detalle');
+  div.innerHTML=carrito.map((x,i)=>`<p>${x.n} x${x.q} — S/ ${x.sub.toFixed(2)} <button onclick="del(${i})">❌</button></p>`).join('');
+  document.getElementById('total').innerText='S/ '+carrito.reduce((a,i)=>a+i.sub,0).toFixed(2);
+}
+function del(i){carrito.splice(i,1);document.getElementById('counter').innerText=carrito.reduce((a,i)=>a+i.q,0);showDetails();showToast('❌ Eliminado');}
+function confirmar(){
+  if(!carrito.length){showToast('Carrito vacío');return;}
+  closeCart();
+  window.open(`https://wa.me/qr/NS6RQGWMGHSEM1?text=${encodeURIComponent(JSON.stringify(carrito))}`,'_blank');
+  lanzarConfeti(); carrito=[];document.getElementById('counter').innerText='0';showDetails();
+}
+function lanzarConfeti(){
+  const cnv=document.getElementById('confeti'),ctx=cnv.getContext('2d');
+  cnv.width=window.innerWidth;cnv.height=window.innerHeight;
+  const arr=[],cols=document.body.classList.contains('dark-mode')?['#555','#666','#777']:['#ffb07c','#fff5a5','#b8f2c9'];
+  for(let i=0;i<60;i++)arr.push({x:Math.random()*cnv.width,y:-20,dx:(Math.random()-0.5)*4,dy:Math.random()*3+2,r:Math.random()*5+3,c:cols[Math.floor(Math.random()*cols.length)]});
+  const start=Date.now(),dur=parseInt(selConf.value);
+  (function anim(){const now=Date.now();ctx.clearRect(0,0,cnv.width,cnv.height);arr.forEach(p=>{ctx.beginPath();ctx.fillStyle=p.c;ctx.arc(p.x,p.y,p.r,0,2*Math.PI);ctx.fill();p.x+=p.dx;p.y+=p.dy});if(now-start<dur)requestAnimationFrame(anim);else ctx.clearRect(0,0,cnv.width,cnv.height);})();
+}
+function showToast(msg){const t=document.getElementById('toast');t.innerText=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000);}
+</script>
+</body>
+</html>
