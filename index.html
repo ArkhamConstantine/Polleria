@@ -316,8 +316,7 @@ function showDetails(){
 function del(i){carrito.splice(i,1);document.getElementById('counter').innerText=carrito.reduce((a,i)=>a+i.q,0);showDetails();showToast('❌ Eliminado');}
 function confirmar(){
   if(!carrito.length){showToast('Carrito vacío');return;}
-  closeCart();
-  window.open(`https://wa.me/qr/NS6RQGWMGHSEM1?text=${encodeURIComponent(JSON.stringify(carrito))}`,'_blank');
+  closeCart(); window.open(`https://wa.me/51957863604?text=${encodeURIComponent(JSON.stringify(carrito))}`, '_blank');
   lanzarConfeti(); carrito=[];document.getElementById('counter').innerText='0';showDetails();
 }
 function lanzarConfeti(){
